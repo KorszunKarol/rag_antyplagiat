@@ -1,203 +1,147 @@
-# Z04: NOWOCZESNY SYSTEM ANTYPLAGIATOWY – PlagiarismGuard ✅
+# PlagiarismGuard
+
+
 
----
+Advanced AI-Driven Plagiarism Detection for Scientific Research
+
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://antyplagiat.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-13+-000000?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.io/)
+[![Pinecone](https://img.shields.io/badge/Pinecone-Vector%20DB-4255ff?style=for-the-badge)](https://www.pinecone.io/)
+
+## Development Status
+
+**This project is currently under active development.** We're still implementing and refining core features. The frontend demo shows the direction we're taking with the UI/UX, but the backend systems are still evolving.
+
+Check out our [live demo here](https://antyplagiat.vercel.app/).
+
+## Project Overview
+
+PlagiarismGuard is a plagiarism detection system built specifically for scientific research papers. We're using modern AI and vector embeddings to provide accurate detection by comparing submitted documents against a comprehensive corpus of scientific literature.
+
+Our system goes beyond simple text matching by understanding semantic similarities. It's designed with academic and research papers in mind, so it understands scientific conventions and citation patterns. The interactive reports highlight potential plagiarized sections with clear source references.
+
+We've built the system on a large knowledge base drawn from arXiv and other academic sources, and wrapped it all in a clean, responsive interface that works well on any device.
+
+## Architecture
 
-## 📋 Spis treści 📑
+PlagiarismGuard uses a modern, serverless architecture:
 
-1. [🚀 Workflow](#workflow)
-   - [🛠️ Ogólny przepływ pracy](#ogólny-przepływ-pracy)
-   - [🔄 Szczegóły sekwencji działania](#szczegóły-sekwencji-działania)
-2. [💡 Design Thinking w projekcie „PlagiarismGuard”](#design-thinking-w-projekcie-plagiarismguard)
-   1. [🤝 Empatyzacja: Zrozumienie użytkownika](#1-empatyzacja-zrozumienie-użytkownika)
-   2. [📋 Definicja problemu](#2-definicja-problemu)
-   3. [💡 Generowanie pomysłów](#3-generowanie-pomysłów)
-   4. [🖌️ Prototypowanie i iteracje interfejsu](#4-prototypowanie-i-iteracje-interfejsu)
-   5. [✅ Testowanie](#5-testowanie)
-3. [🛠️ Zastosowane technologie](#zastosowane-technologie)
-   - [🖥️ Backend](#backend)
-   - [💻 Frontend](#frontend)
-   - [☁️ Infrastruktura i hosting](#infrastruktura-i-hosting)
-   - [🔗 Narzędzia i API](#narzędzia-i-api)
+```
+┌────────────────┐      ┌────────────────┐      ┌────────────────┐
+│                │      │                │      │                │
+│  Next.js App   │─────▶│ Vercel Edge    │─────▶│   Supabase     │
+│  (Frontend)    │      │ Functions      │      │  (PostgreSQL)  │
+│                │◀─────│ (Serverless)   │◀─────│                │
+└────────────────┘      └────────────────┘      └────────────────┘
+                               │  ▲
+                               │  │
+                               ▼  │
+                        ┌────────────────┐
+                        │                │
+                        │   Pinecone     │
+                        │  Vector DB     │
+                        │                │
+                        └────────────────┘
+```
 
----
+### Technology Stack
 
-## 🚀 Workflow
+On the frontend, we're using Next.js 13+ with App Router, React, TypeScript, and Tailwind CSS. The backend runs on Vercel Edge Functions for a completely serverless approach. For data storage, we use Supabase (PostgreSQL) for user data, document metadata, and report results, while Pinecone serves as our vector database for semantic search.
 
-### 🛠️ Ogólny przepływ pracy systemu
+We generate embeddings using OpenAI's text-embedding-3-small model and handle data processing through custom Python scripts. Everything is deployed on the Vercel Platform.
 
-Poniżej prezentujemy schemat modularnego działania systemu antyplagiatowego **PlagiarismGuard**, umożliwiający łatwe rozbudowywanie i integrację z zewnętrznymi systemami.
+## Project Structure
 
-![Diagram ogólnego przepływu](images/wnticheat_workflow.drawio.png)
+```
+z04/
+├── apps/
+│   └── frontend/          # Next.js application (UI + serverless functions)
+│       ├── public/        # Static assets
+│       └── src/           # Source code
+│           ├── app/       # Next.js App Router pages
+│           ├── components/# UI components
+│           ├── lib/       # Utility functions
+│           └── types/     # TypeScript type definitions
+│
+├── packages/              # Shared code and utilities
+│
+├── scripts/               # Operational and data processing scripts
+│   ├── download_arxiv/    # Scripts for downloading papers
+│   └── preprocessing/     # Pipeline for processing documents
+│       ├── modules/       # Processing modules (extraction, embedding, etc.)
+│       └── tests/         # Test suite
+│
+└── images/                # Project images and assets
+```
 
-1. **📤 Przesyłanie dokumentu**  
-   Użytkownik (student, promotor lub administrator) przesyła dokument w formacie **PDF**, **DOCX** lub **TXT** za pomocą intuicyjnego interfejsu.
+## Getting Started
 
-2. **🔍 Ekstrakcja tekstu**  
-   System wykorzystuje biblioteki **PyPDF2** i **python-docx** do wydobycia pełnej zawartości tekstowej z załadowanego pliku.
+### Prerequisites
 
-3. **🔡 Przetwarzanie tekstu**  
-   Tekst jest tokenizowany, a następnie konwertowany na wektorowe zanurzenia (embeddings) przy pomocy **SentenceTransformers** (modele BERT/SBERT), co pozwala na analizę semantyczną.
+Before you start, you'll need:
+- Node.js 16.8+ and npm
+- Python 3.9+ for the data processing scripts
+- AWS CLI if you want to access the arXiv dataset
+- Accounts for Supabase and Pinecone
+- An OpenAI API key
 
-4. **🗄️ Porównanie z bazą danych**  
-   Uzyskane wektory są wyszukiwane w bazie **PostgreSQL** z rozszerzeniem **pgvector**, przy użyciu narzędzia **FAISS** do szybkiego wyznaczania najbliższych sąsiadów.
+### Installation & Setup
 
-5. **📝 Generowanie raportu**  
-   Model LLM (np. **GPT-4**) przetwarza wyniki porównania, tworząc czytelny raport z interpretacją wykrytych podobieństw.
+Start by cloning the repository:
+```bash
+git clone https://github.com/yourusername/plagiarism-guard.git
+cd plagiarism-guard
+```
 
-6. **📊 Prezentacja wyników**  
-   Raport jest wyświetlany w interfejsie użytkownika w formie wizualnej, z podświetlonymi fragmentami i bezpośrednimi odnośnikami do źródeł.
+Then install the frontend dependencies:
+```bash
+cd apps/frontend
+npm install
+```
 
----
+You'll need to set up your environment variables:
+```bash
+cp .env.example .env.local
+# Edit .env.local with your API keys and configuration
+```
 
-### 🔄 Szczegóły sekwencji działania
+Now you can run the development server:
+```bash
+npm run dev
+```
 
-Poniższy diagram ilustruje krok po kroku przepływ danych i interakcje między komponentami systemu.
+If you want to work with the data processing scripts:
+```bash
+cd ../../scripts/preprocessing
+pip install -r requirements.txt
+python main.py
+```
 
-![Diagram sekwencji działania](images/seq.png)
+## Features
 
-1. **👤 Użytkownik** przesyła plik do endpointu `/api/documents` metodą **POST**.  
-2. **🌐 Frontend (Next.js)** odbiera plik i przekazuje go do backendu.  
-3. **🐍 Backend (Python)**:  
-   - Ekstrakcja tekstu z dokumentu.  
-   - Podział tekstu na fragmenty i wysłanie do usługi **Embeddings**.  
-4. **🤖 Usługa Embeddings**:  
-   - Generuje wektorowe reprezentacje (embeddingi).  
-   - Zwraca embeddingi do backendu.  
-5. **🗄️ Baza danych (Supabase / PostgreSQL + pgvector)**:  
-   - Wykonuje zapytanie FAISS, zwracając listę podobnych fragmentów i ich metadane.  
-6. **🔗 Backend** wysyła fragmenty wraz z kontekstem do **modelu LLM** (np. LLaMA), który:  
-   - Analizuje stopień zbliżenia semantycznego.  
-   - Generuje szczegółowe wyjaśnienia i interpretacje.  
-7. **🔄 Backend** formatuje końcowy raport i zwraca go w formacie JSON.  
-8. **🖥️ Frontend** renderuje interaktywny raport dla użytkownika, umożliwiając porównanie oryginalnych i podejrzanych fragmentów.
+Our system includes a secure login/registration system and supports uploading various academic paper formats like PDF and DOCX. Once you're logged in, you can use the analysis dashboard to track and manage your submitted documents.
 
-> System dzięki takiemu podejściu jest skalowalny, wydajny i łatwy w utrzymaniu.
+The detailed reports provide comprehensive plagiarism analysis with similarity metrics, source identification with references to potential source materials, and visual text highlighting that makes it easy to spot potentially plagiarized sections.
 
----
+## Technical Implementation
 
-## 💡 Design Thinking w projekcie „PlagiarismGuard”
+We've built PlagiarismGuard with a serverless architecture using Vercel Edge Functions for scalable, cost-effective backend processing. The system performs semantic similarity detection using Pinecone's vector database and employs a Retrieval-Augmented Generation (RAG) approach for accurate plagiarism detection.
 
-Implementacja metodologii Design Thinking obejmowała pięć iteracyjnych etapów, pozwalających na optymalizację UX i UI.
+We've also implemented streaming results so you get real-time progress updates during analysis, and we've optimized our data pipeline for efficient processing of scientific papers from arXiv and other sources.
 
-### 1. 🤝 Empatyzacja: Zrozumienie użytkownika
+## Contributors
 
-Przeprowadziliśmy wywiady i warsztaty z kluczowymi grupami użytkowników:
+- [Your Name](https://github.com/yourusername)
+- [Contributor 1](https://github.com/contributor1)
+- [Contributor 2](https://github.com/contributor2)
 
-- **🎓 Studenci** – chcą mieć pewność, że ich prace są wolne od nieświadomego plagiatu.
-- **👩‍🏫 Promotorzy** – potrzebują szybkiego, klarownego wglądu w wyniki.
-- **⚙️ Administratorzy** – zarządzają bazą dokumentów i dostępami.
+## License
 
-**Główne wyzwania:**
-- Brak jasnych instrukcji interpretacji wyników.  
-- Niska czytelność listy podejrzanych fragmentów.  
-- Trudność w porównaniu fragmentu z oryginalnym źródłem.  
-- Brak pełnego kontekstu przy ocenie podobieństwa.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 2. 📋 Definicja problemu
+## Acknowledgements
 
-Na podstawie analizy empatii określono cele projektowe:
-
-- **Zrozumiałość raportu** dla użytkownika bez wsparcia eksperta.
-- **Intuicyjna nawigacja** i minimalne potrzeby szkoleniowe.
-- **Widoki side-by-side** dla łatwego porównania treści.
-
-**Kluczowe wskaźniki sukcesu:**
-- Skrócenie czasu interpretacji raportu.  
-- Wzrost retencji użytkowników.  
-- Pozytywne oceny w ankietach.
-
-### 3. 💡 Generowanie pomysłów
-
-Warsztaty zespołowe (frontend, backend, UX/UI, PO) oraz analiza konkurencji (Turnitin, Unicheck) zaowocowały:
-
-- Makietami low-fidelity i user flows.  
-- Pomysłami na panel główny z szybkim dostępem do ostatnich analiz.  
-- Systemem kolorowych etykiet: 🟢 zielony (niski poziom), 🟡 żółty (średni), 🔴 czerwony (wysoki).  
-- Pomysłem na wbudowany **AI Assistant** wspomagający interpretację.
-
-### 4. 🖌️ Prototypowanie i iteracje interfejsu
-
-Iteracyjny proces w Figma i Agile przyniósł cztery wersje prototypu:
-
-#### Wersja 1
-
-![Wersja 1](images/v1.jpg)  
-Pierwszy, prosty układ prezentował jedynie ogólne statystyki. Użytkownicy zwracali uwagę na brak kontekstu i mało intuicyjną nawigację.
-
----
-
-#### Wersja 2
-
-![Wersja 2](images/v2.jpg)  
-Dwukolumnowy layout, kolorowe etykiety poziomu podobieństwa oraz zakładki umożliwiające szybkie przełączanie między sekcjami.
-
----
-
-#### Wersja 3
-
-![Wersja 3](images/v3.jpg)  
-Dodano funkcje: przypinanie dokumentów, przegląd historii skanów, filtrowanie wyników według źródła.
-
----
-
-#### Wersja 4 (Finalna)
-
-![Wersja 4](images/v4.jpg)  
-Pełne porównanie tekstu (side-by-side), tryb ciemny, wyszukiwarka dokumentów, **AI Assistant**. Testy beta wykazały dużą satysfakcję użytkowników.
-
----
-
-### 5. ✅ Testowanie
-
-Przeprowadzono następujące rundy testów:
-
-- **🔍 Testy użyteczności** ze studentami i wykładowcami.  
-- **📊 Ankiety satysfakcji**.
-
-**Wyniki:**
-
-- 87% użytkowników uznało nowy interfejs za bardziej intuicyjny.  
-
-**Dodane funkcje po testach:**
-- 🖨️ Eksport raportów do PDF z adnotacjami.  
-- 🔗 Integracja z repozytoriami CORE API i ArXiv.  
-- ⚙️ Zaawansowane filtry kontekstowe dla administratorów.
-
----
-
-## 🛠️ Zastosowane technologie
-
-### 🖥️ Backend
-
-- **Python** – główny język integrujący komponenty.  
-- **Django / FastAPI** – budowa i obsługa REST API.  
-- **PyPDF2 / python-docx** – parsowanie i ekstrakcja tekstu.  
-- **SentenceTransformers (BERT/SBERT)** – generowanie embeddingów.  
-- **FAISS** – szybkie wyszukiwanie najbliższych wektorów.  
-- **LangChain** – łączenie wyników wyszukiwania wektorowego z LLM.  
-- **OpenAI API (GPT-4)** – analiza i generowanie raportów.  
-- **PostgreSQL + PGVector** – przechowywanie metadanych i embeddingów.  
-- **Docker** – konteneryzacja aplikacji.
-
-### 💻 Frontend
-
-- **Next.js (React)** – budowa interfejsu użytkownika.  
-- **TypeScript** – statyczne typowanie.  
-- **Tailwind CSS** – stylowanie utility-first.  
-- **Shadcn UI** – gotowe komponenty oparte na Radix UI.
-
-### ☁️ Infrastruktura i hosting
-
-- **Supabase** – zarządzana instancja PostgreSQL z pgvector, uwierzytelnianie i przechowywanie plików.  
-- **Vercel** – hosting frontendu z automatycznymi wdrożeniami.  
-- **VPS (Digital Ocean, AWS)** – hosting backendu i procesów AI/NLP.
-
-### 🔗 Narzędzia i API
-
-- **GitLab** – kontrola wersji i CI/CD.  
-- **CORE API** – dostęp do otwartych publikacji naukowych.
-
----
-
-*Dokumentacja projektu „PlagiarismGuard” dla Z04 – pełny opis architektury, procesu projektowego i technologii.*
+Thanks to arXiv for providing access to their paper repository and to Semantic Scholar Open Research Corpus (S2ORC) for additional research data. We also want to acknowledge all the open-source libraries and frameworks that made this project possible.
 
