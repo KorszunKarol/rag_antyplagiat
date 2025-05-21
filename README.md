@@ -131,17 +131,3 @@ We've built PlagiarismGuard with a serverless architecture using Vercel Edge Fun
 
 We've also implemented streaming results so you get real-time progress updates during analysis, and we've optimized our data pipeline for efficient processing of scientific papers from arXiv and other sources.
 
-## Contributors
-
-- [Your Name](https://github.com/yourusername)
-- [Contributor 1](https://github.com/contributor1)
-- [Contributor 2](https://github.com/contributor2)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-Thanks to arXiv for providing access to their paper repository and to Semantic Scholar Open Research Corpus (S2ORC) for additional research data. We also want to acknowledge all the open-source libraries and frameworks that made this project possible.
-
