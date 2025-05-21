@@ -1,0 +1,4 @@
+python-dotenv
+pinecone-client
+pinecone-plugin-assistant
+# supabase (if Supabase interaction is added later)
